@@ -1,0 +1,123 @@
+<출처> 차분프라이버시 - 이론 및 응용, 정연돈 교수님, Korea university database laboratory 
+https://www.youtube.com/watch?v=YHvY4en8XkU
+
+Differential Privacy:Theories and Application
+1. What is Privacy?
+2. Differential Privacy
+3. Local Differential Privacy
+4. Research Areas of Differential Privacy
+
+1. What is Privacy?
+Dalenius의 statistical database에 대한 privacy 목적
+"statistical database에 대한 접근은 접근없이 배울 수 없는 개인에 대한 어떠한 것도 배울 수 없도록 해야한다." 
+statistical database에 접근했을 때 개인에 대한 정보를 추가적으로 얻을 수 있다면, 정보가 유출된 것이다. 만약에 그것이 불가능하다면, privacy가 보장된 것이고, 안전하다는 의미이다.
+
+Dalenius's statistical database privacy
+database DB->f(DB)
+f(DB)? 서버로부터 제공받은 Query function
+f(DB)에 대한 출력은 개인의 중요한 정보이 노출할 수 있다.
+
+이에 대해 반증하는 Dwork의 Terry Gross의 키 값 예시
+-> 데이터베이스가 국적에 따른 여성들의 평균 키 값을 도출한다고 가정하자.
+-> 침해자가 statistical database에 접근하고, Terry Gross의 키 값이 리투아니아의 평균 여성 키보다 두배 작다는 배경지식을 갖고 있다. Terry Gross에 대한 정보를 알고 있는 상태이다.
+-> 그렇다면 데이터베이스의 Terry Gross의 키 값 여부와 상관없이, 무관하게 그녀의 privacy가 침해된 것이다. 또한 침해자가 어떠한 배경지식을 가지고 있는지에 따라 그녀의 privacy가 안전하지 못할 수도 있다.
+즉, 배경지식을 가지고 있는 사람들로부터 개인의 privacy를 보호해야하는 privacy mechanism이 필요하다.
+
+statistical database privacy
+database DB->fprivate(DB,ϵ)
+ϵ? 입실론, fprivate의 parameter 
+fprivate(DB,ϵ)? privacy mechanism을 더한다. 개인의 privacy를 보호한다. 정량적으로 표현가능하다.(E에 의해 통제되면서)
+fprivate(DB,ϵ)와 f(DB)의 값 차이가 발생할 것이다. 하지만 차이 때문에 데이터를 분석하는 데에 피해를 주면 안된다. 원본 데이터의 값 차이가 없으면 바람직하다.
+
+2. Differential Privacy
+ϵ-differencial privacy의 정의
+neighboring datasets D and D'? D는 모든 데이터를 가지고 있는 상태, D'는 어떤 하나의 정보가 없고 나머지 데이터가 D와 같은 상태. 즉, D가 10개의 데이터를 가지고 있다면, D'는 9개의 데이터를 가지고 있을 것 
+A? mechanism
+Pr[A(D)=R]/Pr[A(D')=R]<=e^ϵ (RϵRange(A))
+-> A라는 mechanism에 각각 D와 D'의 값을 넣었을 때의 확률이 R일 때의 값이 e^ϵ 보다 작다면, mechanism A는 ϵ-differential privacy를 만족한다. mechanism A에 어떤 사람의 정보가 들어있지 않아도,유사한 결과를 낸다. 한 사람의 추가 여부 상관없이 결과가 비슷하므로, 그 사람의 privacy가 침해되지 않는다.
+
+differencial privacy의 목적
+-> 유효한 작업(A mechanism)의 결과에 의해서 개인 정보가 얼마만큼 유출될 것인지를 수학적으로 정량화할 수 있다. 
+-> 개인의 privacy가 수학적으로 정량화된 특정 수치 범위 이상으로 유출되지 않을 것이라는 데이터 분석 알고리즘을 만들 수 있다. 
+"statistical database에 개인정보가 추가된 순간 privacy의 위험이 생겨서는 안된다." -Cynthia Dwork-
+
+How to achieve Differential Privacy?
+Laplace Mechanism
+Query q->Database->True answer q(D)->q(D)+n->user
+n? noise 값
+q(D)+n? 원래의 값에 noise 값을 더해서 return
+user의 배경지식이 많을수록 privacy가 위험해진다. 따라서 q(D)에 parameter를 더해서 user에게 제공한다.
+Laplace distribution에서 샘플링된 노이즈로 응답하기
+-> 각각의 데이터는 데이터베이스에 대한 많은 정보를 유출하지 않는다. 
+-> noisy answer는 원래의 answer과 근접하다.
+직접적인 개인의 privacy 침해를 최소한으로 줄이고, 원래의 값을 살리는 것이 목적
+예시
+-> 데이터베이스에는 AIDS 환자의 수가 담겨져 있다. 다음 q를 질문한다면
+answer는 q(D)이지만, q(D)에 noise값 n을 더해서 return 
+n? 최소 0부터 λ^2의 범위 내에 Laplace distribution이 제공하는 랜덤 값이다. 
+λ^2? 분산
+
+How Much Noise for Privacy?
+Sensitivity=△q=max|q(D)-q(D')| (D,D' are neighboring database)
+λ^2=(△q/ϵ)^2
+Laplace distribution이 제공하는 Noise 값을 통해 ϵ-differential privacy을 만족한다.
+
+Privacy Budget
+answer에 noise를 더한 값을 반복적으로 제공하다보면 answer값에 더욱 가까워진다. statistical database는 개인 정보를 유출할 확률이 높아진다. 따라서, 동일한 작업을 특정한 수만큼 수행하면 안된다.  
+
+Trusted Servers 
+server는 q(D)+noise를 계산하기를 원한다. server를 믿고 그들의 정보를 추론한다.
+Untrusted Servers 
+말그대로 server를 믿지 않는 것이다. 개인은 server에게 정확한 정보를 제공하지 않는다. 개인은 변조된 데이터를 server에게 제공한다. server는 original 값이 갖는 것이 아니라 개인이 변조시킨 값을 갖는 것이다. 만약에 server가 해킹당한다면, 개인의 original 값이 아닌 변조시킨 값이 유출된다. 
+
+3. Local Differential Privacy
+Untrusted Server를 구현하기 위한 이론, 지역 차분 프라이버시
+v? 입력 데이터
+v'? v와 다른 입력 데이터
+Pr[A(v)=R]/Pr[A(v')=R]<=e^ϵ, (RϵRange(A))
+A mechanism에 서로 다른 데이터(v와 v')을 입력했을 때, 같은 확률이 나온다면 privacy가 안전하다는 것이다.
+ϵ-differential privacy와의 차이점
+ϵ-differential privacy: neighboring datasets D, D'을 입력
+ϵ-local differential privacy: 서로 다른 데이터 v, v'을 입력
+
+Randomized response
+의미화 응답, 랜덤화 응답
+
+ARR(y|x)=p=eϵ/(eϵ+1) if y=x (Probability that gives true answer)
+         q=1/(eϵ+1) if y!=x (Probability that gives opposite answer)
+Noisy distribution을 통해 외부 사람이 데이터를 봤을 때 실제 데이터인지 구별할 수 없어서 privacy가 보장된다. 확률로 계산 가능하다는 것이 특징이다.
+
+Real World Use cases of LDP
+ex) Google Rappor 
+1. URL를 Bloom filter를 사용해서 k-bit vector로 만든다.
+Bloom filter? 010010같은 형태를 담은 것
+2.Bloom filter에 있는 bit들을 randomized reponse에 적용한다. 비트들이 변조된다. server는 변조된 비트들을 수집한다.
+3. 변조된 데이터들을 가지고 사용자들이 어떤 URL을 default page로 설정하는지에 대한 패턴을 분석한다.
+ex) Apple
+1. New words 
+2. Emojis
+3. Deeplinks
+4. Lookup hints in Notes
+5. Health data (Apple watch)
+
+How to choose ϵ?
+ϵ의 값이 0이면, privacy가 완전하게 보호되는 것을 말한다. 
+ϵ의 값이 크면 클수록, noise 값이 작아져 정확성이 커진다. 
+ϵ의 값이 작을 수록, noise 값이 커져 정확성이 작아진다.
+Parameter 고려 사항: ϵ과 N (the number of reports)
+privacy degree를 높이려면, ϵ의 값이 낮아지고, noise가 커지게 되어 정확성이 떨어진다. (분석가의 관점)
+개인과 분석사의 관심 차이가 존재
+개인:privacy, 분석가:accuracy
+N값이 크면 accuracy가 커지고, N값이 작아지면 accuracy가 낮아진다. 
+각각 관점이 다르기 때문에 ϵ의 값을 고르기 위한 기준이 없다.
+
+4. Research Areas of Differential Privacy
+1) PPDP (Privacy-Preserving Data Publication)
+데이터를 웹에 공개하는 것이다.
+PP Data Synthesis: 데이터를 새롭게 만들어서 합성
+PP Data Transformation: 원본 데이터를 변형시켜서 공개
+PP Statistics Publication
+2) PPDC/DM (Privacy-Preserving Data Collection and Mining)
+PP Numeric/Categorical Data Collection, PP Location/Trajectory Collection, PP Stream Collection, PP Health data Collection, PP frequent word mining
+3) PPML/DL (Privacy-preserving Machine Learning/Deep Learning)
+PP Recommendation, PP SGD, PP GAN, PP Federated Learning
